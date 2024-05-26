@@ -1,0 +1,260 @@
+function myFunction() {
+  //selecionando a planinha e a faixa de dados que serão analisados
+  var planilhaEventos = SpreadsheetApp.getActiveSpreadsheet();
+  var abaTipoEvento = planilhaEventos.getSheetByName('formEventos');
+  var faixaTipoEvento = abaTipoEvento.getRange('B2:B9');
+  var tipoEvento = faixaTipoEvento.getValues();
+  var faixaqtdPessoas = abaTipoEvento.getRange('C2:C9');
+  var qtdPessoas = faixaqtdPessoas.getValues();
+
+  //nomeando as colunas dos dados consolidados
+
+  var TituloColunaPessoas = abaTipoEvento.getRange('F1');
+  TituloColunaPessoas = TituloColunaPessoas.setValue('Quantidade pessoas Total');
+
+  var TituloColunaFaturamento = abaTipoEvento.getRange('H1');
+  TituloColunaFaturamento = TituloColunaFaturamento.setValue('Faturamento Total');
+
+  var TituloColunaCusto = abaTipoEvento.getRange('J1');
+  TituloColunaCusto = TituloColunaCusto.setValue('Custo Total');
+  var TituloColunaPessoas = abaTipoEvento.getRange('F1');
+  TituloColunaPessoas = TituloColunaPessoas.setValue('Quantidade pessoas Total');
+
+  var TituloColunaCusto = abaTipoEvento.getRange('J1');
+  TituloColunaCusto = TituloColunaCusto.setValue('Custo Total');
+
+  var TituloColunaLucro = abaTipoEvento.getRange('L1');
+  TituloColunaLucro = TituloColunaLucro.setValue('Lucro Total');
+
+
+  //zerando os contadores que serão utilizados para somar a quantidade total de pessoas a cada atualização da planilha
+
+  var somaPessoasEsporte = 0;
+  var somaPessoasTeatro = 0;
+  var somaPessoasDanca = 0;
+  var somaPessoasCinema = 0;
+  var somaPessoasMusica = 0;
+
+  //iniciando as repetições para varrer as colunas do fomulário
+
+  for(indexEvento = 0; indexEvento <= tipoEvento.length; indexEvento++){
+    var arrayEventos = tipoEvento[indexEvento];
+    
+
+    
+    //condições para aglutinar a quantidade de pessoas por tipo de evento baseado nas respostas dos formulários
+    //pra cada tipo de evento, grava a somatória da coluna em uma coluna correspondente
+    //gravo o tipo de evento numa coluna separada como uma string
+    if (arrayEventos == 'evento esporte')
+    {
+      var tituloColunaPessoas = abaTipoEvento.getRange('G2');
+      tituloColunaPessoas = tituloColunaPessoas.setValue('Evento esporte')
+      var colunaSomaPessoasEsporte = abaTipoEvento.getRange('F2')
+      var arrayPessoas = Number(qtdPessoas[indexEvento]);
+      somaPessoasEsporte = somaPessoasEsporte + arrayPessoas;
+      colunaSomaPessoasEsporte = colunaSomaPessoasEsporte.setValue(somaPessoasEsporte);
+
+    }
+
+    else if (arrayEventos == 'evento teatro')
+    {
+      var tituloColunaPessoas = abaTipoEvento.getRange('G3');
+      tituloColunaPessoas = tituloColunaPessoas.setValue('Evento teatro')
+      var colunaSomaPessoasTeatro = abaTipoEvento.getRange('F3')
+      var arrayPessoas = Number(qtdPessoas[indexEvento]);
+      somaPessoasTeatro = somaPessoasTeatro + arrayPessoas;
+      colunaSomaPessoasTeatro = colunaSomaPessoasTeatro.setValue(somaPessoasTeatro);
+    }
+    else if (arrayEventos == 'evento dança')
+    {
+      var tituloColunaPessoas = abaTipoEvento.getRange('G4');
+      tituloColunaPessoas = tituloColunaPessoas.setValue('Evento dança')
+      var colunaSomaPessoasDanca = abaTipoEvento.getRange('F4')
+      var arrayPessoas = Number(qtdPessoas[indexEvento]);
+      somaPessoasDanca = somaPessoasDanca + arrayPessoas;
+      colunaSomaPessoasDanca = colunaSomaPessoasDanca.setValue(somaPessoasDanca);
+    }
+
+    else if (arrayEventos == 'evento cinema')
+    {
+      var tituloColunaPessoas = abaTipoEvento.getRange('G5');
+      tituloColunaPessoas = tituloColunaPessoas.setValue('Evento cinema')
+      var colunaSomaPessoasCinema = abaTipoEvento.getRange('F5')
+      var arrayPessoas = Number(qtdPessoas[indexEvento]);
+      somaPessoasCinema = somaPessoasCinema + arrayPessoas;
+      colunaSomaPessoasCinema = colunaSomaPessoasCinema.setValue(somaPessoasCinema);
+    }
+
+    else if (arrayEventos == 'evento música')
+    {
+      var tituloColunaPessoas = abaTipoEvento.getRange('G6');
+      tituloColunaPessoas = tituloColunaPessoas.setValue('Evento Música')
+      var colunaSomaPessoasMusica = abaTipoEvento.getRange('F6')
+      var arrayPessoas = Number(qtdPessoas[indexEvento]);
+      somaPessoasMusica = somaPessoasMusica + arrayPessoas;
+      colunaSomaPessoasMusica = colunaSomaPessoasMusica.setValue(somaPessoasMusica);
+    }
+    else
+    {
+      //console.log('Evento não cadastrado ou inexistente')
+    }
+
+
+   }
+
+//definindo os valores e custos dos ingressos para realizar os calculos de arrecadação (faturamento) lucro e custo
+var ingressoEsporte = 50;
+var custoEsporte = 30;
+var ingressoTeatro = 50;
+var custoTeatro= 30;
+var ingressoDanca = 40;
+var custoDanca = 35;
+var ingressoCinema = 70;
+var custoCinema = 42;
+var ingressoMusica = 65;
+var custoMusica = 51;
+
+//calculando o faturamento total e o custo total e o lucro para cada tipo de evento
+var fatTotalEsporte = somaPessoasEsporte*(ingressoEsporte);
+var custoTotalEsporte = somaPessoasEsporte*custoEsporte;
+var lucroEsporte = fatTotalEsporte - custoTotalEsporte;
+
+var fatTotalTeatro = somaPessoasTeatro*(ingressoTeatro);
+var custoTotalTeatro = somaPessoasTeatro*custoTeatro;
+var lucroTeatro = fatTotalTeatro - custoTotalTeatro
+
+var fatTotalDanca = somaPessoasDanca*(ingressoDanca);
+var custoTotalDanca = somaPessoasDanca*custoDanca;
+var lucroDanca = fatTotalDanca - custoTotalDanca;
+
+var fatTotalCinema = somaPessoasCinema*(ingressoCinema);
+var custoTotalCinema = somaPessoasCinema*custoCinema;
+var lucroCinema = fatTotalCinema- custoTotalCinema;
+
+var fatTotalMusica = somaPessoasMusica*(ingressoMusica);
+var custoTotalMusica = somaPessoasMusica*custoMusica;
+var lucroMusica = fatTotalMusica - custoTotalMusica;
+
+
+// imprimindo os valores de Faturamento e número de pessoas por evento (só para ver se os cálculos estão saindo corretamente e comparar com a próxima etapa)
+console.log('Faturamento Esporte:' +fatTotalEsporte);
+console.log('Custo total esporte: ', + custoTotalEsporte);
+console.log('Quantidade de pessoas Esporte: ' +somaPessoasEsporte);
+console.log('Faturamento Teatro:' +fatTotalTeatro);
+console.log('Custo total Teatro: ', + custoTotalTeatro);
+console.log('Quantidade de pessoas Teatro: ' +somaPessoasTeatro);
+console.log('Faturamento Dança:' +fatTotalDanca);
+console.log('Custo total Dança: ', + custoTotalDanca);
+console.log('Quantidade de pessoas Teatro: ' +somaPessoasDanca);
+console.log('Faturamento Musica:' +fatTotalMusica);
+console.log('Custo total Musica: ', + custoTotalMusica);
+console.log('Quantidade de pessoas Musica: ' +somaPessoasMusica);
+console.log('Faturamento Cinema:' +fatTotalCinema);
+console.log('Custo total Cinema: ', + custoTotalCinema);
+console.log('Quantidade de pessoas Cinema: ' +somaPessoasCinema);
+
+// fazendo a gravação dos títulos e valores de arrecadação (faturamento) e custo para cada tipo de evento
+// posiciono na coluna/célula que quero gravar o valor (título da coluna)
+//gravo o valor (título da coluna)
+// posiciono na coluna/célula que quero gravar o valor (valor da colune)
+//gravo o valor (valor da coluna)
+
+//faturamento esporte
+var tituloFaturamentoEsporte = abaTipoEvento.getRange('H2');
+tituloFaturamentoEsporte = tituloFaturamentoEsporte.setValue('Faturamento Esporte')
+var colunaFaturamentoEsporte = abaTipoEvento.getRange('I2');
+colunaFaturamentoEsporte = colunaFaturamentoEsporte.setValue('R$ ' +fatTotalEsporte);
+
+//custo esporte
+var tituloCustoEsporte = abaTipoEvento.getRange('J2');
+tituloCustoEsporte = tituloCustoEsporte.setValue('Custo Esporte')
+var colunaCustoEsporte = abaTipoEvento.getRange('K2');
+colunaCustoEsporte = colunaCustoEsporte.setValue('R$ ' +custoTotalEsporte);
+
+//lucro esporte
+
+var tituloLucroEsporte = abaTipoEvento.getRange('L2');
+tituloLucroEsporte = tituloLucroEsporte.setValue('Lucro Esporte')
+var colunaLucroEsporte = abaTipoEvento.getRange('M2');
+colunaLucroEsporte = colunaLucroEsporte.setValue('R$ ' +lucroEsporte);
+
+
+//faturamento teatro
+var TituloFaturamentoTeatro = abaTipoEvento.getRange('H3');
+TituloFaturamentoTeatro = TituloFaturamentoTeatro.setValue('Faturamento Teatro');
+var colunaFaturamentoTeatro = abaTipoEvento.getRange('I3');
+colunaFaturamentoTeatro = colunaFaturamentoTeatro.setValue('R$ ' +fatTotalTeatro);
+
+//custo teatro
+var tituloCustoTeatro = abaTipoEvento.getRange('J3');
+tituloCustoTeatro = tituloCustoTeatro.setValue('Custo Teatro')
+var colunaCustoTeatro = abaTipoEvento.getRange('K3');
+colunaCustoTeatro = colunaCustoTeatro.setValue('R$ ' +custoTotalTeatro);
+
+//lucro teatro
+
+var tituloLucroTeatro = abaTipoEvento.getRange('L3');
+tituloLucroTeatro = tituloLucroTeatro.setValue('Lucro Teatro')
+var colunaLucroTeatro = abaTipoEvento.getRange('M3');
+colunaLucroTeatro = colunaLucroTeatro.setValue('R$ ' +lucroTeatro);
+
+
+//faturamento Dança
+var TituloFaturamentoDanca = abaTipoEvento.getRange('H4');
+TituloFaturamentoDanca = TituloFaturamentoDanca.setValue('Faturamento Dança');
+var colunaFaturamentoDanca = abaTipoEvento.getRange('I4');
+var colunaFaturamentoDanca = colunaFaturamentoDanca.setValue('R$ ' +fatTotalDanca);
+
+//custo dança
+
+var tituloCustoTDanca = abaTipoEvento.getRange('J4');
+tituloCustoTDanca= tituloCustoTDanca.setValue('Custo Dança')
+var colunaCustoTDanca = abaTipoEvento.getRange('K4');
+colunaCustoTDanca = colunaCustoTDanca.setValue('R$ ' +custoTotalDanca);
+
+//lucro dança
+
+var tituloLucroDanca = abaTipoEvento.getRange('L4');
+tituloLucroDanca = tituloLucroDanca.setValue('Lucro Dança')
+var colunaLucroDanca = abaTipoEvento.getRange('M4');
+colunaLucroDanca = colunaLucroDanca.setValue('R$ ' +lucroDanca);
+
+//faturamento cinema
+var TituloFaturamentoCinema = abaTipoEvento.getRange('H5');
+TituloFaturamentoCinema = TituloFaturamentoCinema.setValue('Faturamento Cinema');
+var colunaFaturamentoCinema = abaTipoEvento.getRange('I5');
+colunaFaturamentoCinema = colunaFaturamentoCinema.setValue('R$ ' +fatTotalCinema);
+
+//custo cinema
+var TituloCustoCinema = abaTipoEvento.getRange('J5');
+TituloCustoCinema = TituloCustoCinema.setValue('Custo Cinema');
+var colunaCustoCinema = abaTipoEvento.getRange('K5');
+colunaCustoCinema = colunaCustoCinema.setValue('R$ ' +custoTotalCinema);
+
+//lucro cinema
+
+var tituloLucroCinema = abaTipoEvento.getRange('L5');
+tituloLucroCinema = tituloLucroCinema.setValue('Lucro Cinema')
+var colunaLucroCinema = abaTipoEvento.getRange('M5');
+colunaLucroCinema = colunaLucroCinema.setValue('R$ ' +lucroCinema);
+
+//faturamento música
+var TituloFaturamentoMusica = abaTipoEvento.getRange('H6');
+TituloFaturamentoMusica = TituloFaturamentoMusica.setValue('Faturamento Música');
+var colunaFaturamentoMusica = abaTipoEvento.getRange('I6');
+colunaFaturamentoMusica = colunaFaturamentoMusica.setValue('R$ ' +fatTotalMusica);
+
+//custo música
+var TituloCustoMusica = abaTipoEvento.getRange('J6');
+TituloCustoMusica = TituloCustoMusica.setValue('Custo Música');
+var colunaCustoMusica = abaTipoEvento.getRange('K6');
+colunaCustoMusica = colunaCustoMusica.setValue('R$ ' +custoTotalMusica);
+
+//lucro música
+
+var tituloLucroMusica = abaTipoEvento.getRange('L6');
+tituloLucroMusica = tituloLucroMusica.setValue('Lucro Música')
+var colunaLucroMusica = abaTipoEvento.getRange('M6');
+colunaLucroMusica = colunaLucroMusica.setValue('R$ ' +lucroMusica);
+
+}

@@ -1,0 +1,73 @@
+// Adiciona um menu personalizado à planilha
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+
+  // Menu dropdown
+  ui.createMenu('Enviar E-mails')
+      .addItem('Enviar E-mails', 'enviarEmails')
+      .addItem('onOpen', 'onOpen')
+      .addToUi();
+  
+  // Adiciona um botão de exemplo na barra lateral
+  var sidebarHtml = HtmlService.createHtmlOutput('<b>Aqui você pode adicionar qualquer tipo de <h1>HTML</h1></b>');
+  ui.showSidebar(sidebarHtml);
+  
+  // Exibe um alerta na interface do usuário
+  ui.alert('Alerta!', 'Este é um alerta de exemplo.', ui.ButtonSet.OK);
+  
+  // Exibe um prompt na interface do usuário para entrada de texto
+  var resposta = ui.prompt('Pergunta', 'Qual é o seu nome?', ui.ButtonSet.OK_CANCEL);
+  var nome = resposta.getResponseText();
+  
+  // Exibe uma caixa de diálogo modal na interface do usuário
+  ui.alert('Título da Caixa de Diálogo', 'Este é um exemplo de caixa de diálogo modal.' + nome, ui.ButtonSet.OK);
+  
+  // Exibe uma caixa de diálogo não modal na interface do usuário
+  var modelessDialogHtml = HtmlService.createHtmlOutput('<p>Este é um exemplo de caixa de diálogo não é um modal.</p>');
+  ui.showModelessDialog(modelessDialogHtml, 'Título da Caixa de Diálogo');
+}
+
+// Função para enviar e-mails com os dados da tabela
+function enviarEmails() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Reservas');
+  var data = sheet.getRange('A2:F' + sheet.getLastRow()).getValues(); // Obtém os dados da tabela da coluna A até F
+
+  data.forEach(function(reserva) { // Itera sobre os dados
+    var nome = reserva[0]; // Coluna A: nome da pessoa
+    var titulo = reserva[1]; // Coluna B: título da reserva
+    var dataReserva = formatDate(reserva[2]); // Coluna C: data da reserva
+    var horaReserva = formatTime(reserva[3]); // Coluna D: hora da reserva
+    var observacao = reserva[4]; // Coluna E: descrição da reserva
+    var destinatario = reserva[5]; // Coluna F: endereço de e-mail do destinatário
+
+    // Verifica se o destinatário não está vazio antes de enviar o e-mail
+    if (destinatario) {
+      var assunto = 'Lembrete: ' + titulo;
+      var mensagem = 'Olá ' + nome + ',\n\nEste é um lembrete para a sua reserva "' + titulo + '" que acontecerá em ' + dataReserva + ' às ' + horaReserva + '.\n\n Com a seguinte observação: ' + observacao;
+
+      MailApp.sendEmail(destinatario, assunto, mensagem);
+    } else {
+      console.warn('Endereço de e-mail do destinatário está vazio para a reserva:', titulo);
+    }
+  });
+}
+
+// Utilities: É uma classe que oferece métodos para manipular diferentes tipos de dados, como datas, strings e números.
+// Session: É usada para obter informações sobre a sessão, como o fuso horário do script.
+// getScriptTimeZone(): É um método da classe Session que retorna o fuso horário do script.
+
+// Função para formatar a data no padrão brasileiro (DD/MM/YYYY)
+function formatDate(date) {
+  // Cria um objeto Date a partir do valor da data fornecido
+  // e formata a data usando o fuso horário do script
+  return Utilities.formatDate(new Date(date), Session.getScriptTimeZone(), 'dd/MM/yyyy');
+}
+
+// Função para formatar o tempo no padrão brasileiro (HH:MM)
+function formatTime(time) {
+  // Cria um objeto Date usando uma data de referência fixa ('1970-01-01')
+  // e adiciona o tempo fornecido como argumento
+  // Em seguida, formata o tempo usando o fuso horário do script
+  return Utilities.formatDate(new Date('1970-01-01T' + time), Session.getScriptTimeZone(), 'HH:mm');
+}

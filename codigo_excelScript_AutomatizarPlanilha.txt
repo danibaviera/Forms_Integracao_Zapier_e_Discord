@@ -1,0 +1,113 @@
+function main(workbook: ExcelScript.Workbook) {
+    calcularOperacao(workbook);
+}
+
+function calcularOperacao(workbook: ExcelScript.Workbook) {
+    // Pegando a aba "Contas"
+    let abaAtiva = workbook.getWorksheet('Contas');
+
+    // Pega a última linha da coluna B com dados
+    let ultimaLinha: number = abaAtiva.getUsedRange().getRowCount();
+
+    // Pega os valores das colunas necessárias
+    let valorSoma = abaAtiva.getRange('A2:B' + ultimaLinha).getValues() as number[][];
+    let valorMultiplicacao = abaAtiva.getRange('B2:C' + ultimaLinha).getValues() as number[][];
+    let valorDivisao = abaAtiva.getRange('C2:D' + ultimaLinha).getValues() as number[][];
+    let valorPorcentagem = abaAtiva.getRange('D2:E' + ultimaLinha).getValues() as number[][];
+    let valorImparPar = abaAtiva.getRange('E2:F' + ultimaLinha).getValues() as number[][];
+
+    // Chamando funções para calcular os resultados
+    let soma = calculaSoma(valorSoma);
+    let multiplicacao = calculaMultiplicacao(valorMultiplicacao);
+    let divisao = calculaDivisao(valorDivisao);
+    let porcentagem = calculaPorcentagem(valorPorcentagem);
+    let imparPar = calculaImparOuPar(valorImparPar);
+
+    // Resultado das contas
+    let resultado = [
+        ["Soma", soma],
+        ["Multiplicação", multiplicacao],
+        ["Divisão", divisao],
+        ["Porcentagem de 30%", porcentagem],
+        ["Quantidade Ímpar e Par", imparPar]
+    ];
+
+    // Adicionando uma nova planilha "Resultados" se não existir
+    let abaResultados = workbook.getWorksheet('Resultados');
+    if (!abaResultados) {
+        abaResultados = workbook.addWorksheet('Resultados');
+    } else {
+        // Limpar a planilha antes de adicionar novos resultados
+        let usedRange = abaResultados.getUsedRange();
+        if (usedRange) {
+            usedRange.clear();
+        }
+    }
+
+    // Adicionando resultados na nova planilha
+    let rangeResultados = abaResultados.getRangeByIndexes(0, 0, resultado.length, resultado[0].length);
+    rangeResultados.setValues(resultado);
+
+    console.log("Resultados adicionados na planilha 'Resultados'.");
+}
+
+// Função para calcular a soma dos valores
+function calculaSoma(valores: number[][]): number {
+    let soma = 0;
+
+    // Percorremos a matriz [[1]...] para calcular a soma;
+    for (let index = 0; index < valores.length; index++) {
+        // (soma +=) - A mesma coisa que => soma = soma + valores
+        soma += valores[index][0];
+    }
+
+    return soma;
+}
+
+// Função para calcular a multiplicação dos valores
+function calculaMultiplicacao(valores: number[][]): number {
+    let multiplicacao = 1;
+
+    // Percorremos a matriz [[1]...] para calcular a multiplicação;
+    for (let index = 0; index < valores.length; index++) {
+        // (multiplicacao *=) - A mesma coisa que => multiplicacao = multiplicacao * valores
+        multiplicacao *= valores[index][0];
+    }
+
+    return multiplicacao;
+}
+
+// Função para calcular a divisão dos valores
+function calculaDivisao(valores: number[][]): number {
+    let total = calculaSoma(valores);
+    let divisao = total / valores.length;
+
+    return divisao;
+}
+
+// Função para calcular a porcentagem de 30% dos valores
+function calculaPorcentagem(valores: number[][]): number {
+    let total = calculaSoma(valores);
+    let porcentagem = (total * 0.3) / valores.length;
+
+    return porcentagem;
+}
+
+// Função para calcular quantos números ímpares e pares possui
+function calculaImparOuPar(valores: number[][]): string {
+    let pares = 0;
+    let impares = 0;
+
+    // Percorremos a matriz [[1]...] para verificar se é ímpar ou par;
+    // (valores.length) total valores dentro da matriz;
+    for (let index = 0; index < valores.length; index++) {
+        if (valores[index][0] % 2 === 0) {
+            // (pares++) = pares = pares + 1
+            pares++;
+        } else {
+            impares++;
+        }
+    }
+
+    return "Pares: " + pares + ", Ímpares: " + impares;
+}
